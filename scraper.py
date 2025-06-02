@@ -1,3 +1,4 @@
+import tempfile
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -14,7 +15,13 @@ def test_flipkart_selectors(product_url):
     options.add_argument("--disable-gpu")
     options.add_argument("--window-size=1920x1080")
     options.add_argument("--headless=new")
-    driver = webdriver.Chrome(options=options)
+
+    # Create a unique temporary directory for each Chrome instance
+    user_data_dir = tempfile.mkdtemp()
+    options.add_argument(f"--user-data-dir={user_data_dir}")
+
+    service = service(executable_path="/usr/local/bin/chromedriver")  # <-- Use Service
+    driver = webdriver.Chrome(service=service, options=options)  # <-- Pass service here
 
     try:
         print(f"Opening URL: {product_url}")
