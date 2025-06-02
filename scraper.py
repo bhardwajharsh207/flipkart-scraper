@@ -4,6 +4,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service  # Add this line
+from selenium.webdriver.chrome.options import Options
+import shutil
 
 def test_flipkart_selectors(product_url):
     data = {}
@@ -62,7 +64,13 @@ def test_flipkart_selectors(product_url):
     except Exception as e:
         results["error"] = str(e)
     finally:
-        driver.quit()
+        # Cleanup in reverse order
+        if driver:
+            driver.quit()
+        if user_data_dir:
+            shutil.rmtree(user_data_dir, ignore_errors=True)
+            print(f"Cleaned up: {user_data_dir}")
+    
     return results
 
 if __name__ == "__main__":
