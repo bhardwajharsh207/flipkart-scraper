@@ -1,10 +1,8 @@
-import tempfile
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.service import Service
-import shutil
 
 def test_flipkart_selectors(product_url):
     results = {}
@@ -12,11 +10,11 @@ def test_flipkart_selectors(product_url):
     options.add_argument("--disable-gpu")
     options.add_argument("--window-size=1920x1080")
     options.add_argument("--headless=new")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
 
-    # Explicitly create and use a unique user data directory
-    user_data_dir = tempfile.mkdtemp()
-    options.add_argument(f"--user-data-dir={user_data_dir}")
-
+    # You can omit the Service line if chromedriver is in PATH,
+    # but it's fine to be explicit as in your Dockerfile:
     service = Service(executable_path="/usr/local/bin/chromedriver")
     driver = None
 
@@ -60,9 +58,6 @@ def test_flipkart_selectors(product_url):
     finally:
         if driver:
             driver.quit()
-        if user_data_dir:
-            shutil.rmtree(user_data_dir, ignore_errors=True)
-            print(f"Cleaned up: {user_data_dir}")
     
     return results
 
