@@ -3,34 +3,28 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.chrome.service import Service  # Add this line
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
 import shutil
 
 def test_flipkart_selectors(product_url):
-    data = {}
-    """
-    Test different CSS selectors on a Flipkart product page and return the results.
-    """
     results = {}
     options = webdriver.ChromeOptions()
-    # options.add_argument("--headless")  # Uncomment this to run headless once it works
     options.add_argument("--disable-gpu")
     options.add_argument("--window-size=1920x1080")
     options.add_argument("--headless=new")
 
-    # Create a unique temporary directory for each Chrome instance
+    # Explicitly create and use a unique user data directory
     user_data_dir = tempfile.mkdtemp()
-    
+    options.add_argument(f"--user-data-dir={user_data_dir}")
 
-    service = Service(executable_path="/usr/local/bin/chromedriver")  # <-- Use Service
-    driver = webdriver.Chrome(service=service, options=options)  # <-- Pass service here
+    service = Service(executable_path="/usr/local/bin/chromedriver")
+    driver = None
 
     try:
+        driver = webdriver.Chrome(service=service, options=options)
         print(f"Opening URL: {product_url}")
         driver.get(product_url)
         
-        # Dictionary of selectors to test
         selectors_to_test = {
             "Title": "h1._6EBuvT span.VU-ZEz",
             "MRP (Fixed)": "div.yRaY8j.A6\\+E6v",
@@ -64,7 +58,6 @@ def test_flipkart_selectors(product_url):
     except Exception as e:
         results["error"] = str(e)
     finally:
-        # Cleanup in reverse order
         if driver:
             driver.quit()
         if user_data_dir:
@@ -74,9 +67,7 @@ def test_flipkart_selectors(product_url):
     return results
 
 if __name__ == "__main__":
-    # Test URL - replace with any Flipkart product URL
     test_url = "https://www.flipkart.com/product/p/itme?pid=HGRG6YQWHJQUBNJD"
-    
     result = test_flipkart_selectors(test_url)
     for key, value in result.items():
         print(f"{key}: {value}")
