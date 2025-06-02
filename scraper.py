@@ -21,7 +21,7 @@ def test_flipkart_selectors(product_url):
 
     # Create a unique temporary directory for each Chrome instance
     user_data_dir = tempfile.mkdtemp()
-    options.add_argument(f"--user-data-dir={user_data_dir}")
+    
 
     service = Service(executable_path="/usr/local/bin/chromedriver")  # <-- Use Service
     driver = webdriver.Chrome(service=service, options=options)  # <-- Pass service here
