@@ -1,8 +1,13 @@
+
 FROM python:3.10-slim
+
+# Set the working directory in the container
+WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends gnupg wget curl unzip && \
+    apt-get install -y --no-install-recommends gcc python3-dev && \
     rm -rf /var/lib/apt/lists/*
 
 # Check Chrome version before install (should not be found)
@@ -39,5 +44,24 @@ ENV CHROMEDRIVER_BIN=/usr/local/bin/chromedriver
 # (Optional) Default command
 CMD ["google-chrome", "--version"]
 
-CMD ["python", "app.py"]
+# Copy only the requirements file first to leverage Docker cache
+COPY requirements.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Copy the rest of the application code
+COPY . .
+
+# Set environment variables for Flask
+ENV FLASK_APP=app.py
+ENV FLASK_ENV=production  # Use 'development' for debugging
+
+# Expose the port Flask runs on (default: 5000)
+EXPOSE 5002
+
+# Command to run the application using Gunicorn (production)
+CMD ["gunicorn", "--bind", "0.0.0.0:5002", "app:app"]
+
 
