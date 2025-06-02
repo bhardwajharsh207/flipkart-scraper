@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.service import Service  # Add this line
 
 def test_flipkart_selectors(product_url):
     data = {}
@@ -20,7 +21,7 @@ def test_flipkart_selectors(product_url):
     user_data_dir = tempfile.mkdtemp()
     options.add_argument(f"--user-data-dir={user_data_dir}")
 
-    service = service(executable_path="/usr/local/bin/chromedriver")  # <-- Use Service
+    service = Service(executable_path="/usr/local/bin/chromedriver")  # <-- Use Service
     driver = webdriver.Chrome(service=service, options=options)  # <-- Pass service here
 
     try:
