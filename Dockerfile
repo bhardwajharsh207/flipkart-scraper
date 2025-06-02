@@ -38,3 +38,6 @@ ENV CHROMEDRIVER_BIN=/usr/local/bin/chromedriver
 
 # (Optional) Default command
 CMD ["google-chrome", "--version"]
+
+CMD ["python", "app.py"]
+
